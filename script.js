@@ -129,6 +129,21 @@ selquickadd();
 // what you can cook
 
 // api work
+let apiKeys=[
+    "1667a0680e1840efa66c092d79cab985", 
+    "ed5962ee49cf4da08089d587fe2e5a61",
+    "aa175c64c8164fe8a36862aa382ff096",
+    "7abfe218aa6442de9e76c6256d3fb98f"
+];
+let currentKeyIndex=0;
+function getAPIKey(){
+    return apiKeys[currentKeyIndex];
+}
+function rotateapikey(){
+    if(currentKeyIndex<apiKeys.length-1) {
+        currentKeyIndex++;
+    }
+}
 
 const dishes=document.querySelector(".dishes"); 
 
@@ -140,9 +155,13 @@ async function updaterecipes(){
     let newfridgeitems=fridgeitems.join(",");
     console.log(newfridgeitems);
     
-    const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=ed5962ee49cf4da08089d587fe2e5a61&ingredients=${newfridgeitems}&number=10&ranking=2`;
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${getAPIKey()}&ingredients=${newfridgeitems}&number=10&ranking=2`;
     try{
     const response=await fetch(url);
+        if(response.status===402 || response.status===429){
+            rotateapikey();
+            return updaterecipes();
+        }
     const recipedata=await response.json();
 
 dishes.innerHTML="";
@@ -230,10 +249,14 @@ async function showrecipeins(recipeid,missed,usedigr){
     listitems.innerHTML="";
     guidelist.innerHTML="<li>Fetching cooking steps...</li>";
 
-    const url = `https://api.spoonacular.com/recipes/${recipeid}/information?includeNutrition=true&apiKey=ed5962ee49cf4da08089d587fe2e5a61`
+    const url = `https://api.spoonacular.com/recipes/${recipeid}/information?includeNutrition=true&apiKey=${getAPIKey()}`;
 
     try{
         const response=await fetch(url);
+        if(response.status===402 || response.status===429){
+            rotateapikey();
+            return showrecipeins(recipeid,missed,usedigr);
+        }
         const data=await response.json();
 
         modaltitle.innerText=data.title;
