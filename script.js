@@ -35,7 +35,7 @@ function searchitems(){
     search.addEventListener("keydown",(key)=>{
         if(key.target.value!==""){
             let igrename=key.target.value.trim();
-            if(key.code==="Enter"){
+            if(key.code==="Enter"|| key.code===13){
                 igrename=key.target.value.trim();
                 let isDuplicate=fridgeitems.some((items)=>{
                     return ((items.toLowerCase())===(igrename.toLowerCase()));
